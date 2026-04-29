@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear on external disks
+.Spotlight-V100
+.Trashes
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# 如果未來有加入 npm / node_js
+node_modules/
+package-lock.json
