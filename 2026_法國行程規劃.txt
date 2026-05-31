@@ -255,3 +255,5 @@
 9. paris_museum_hours.jpg (巴黎各大博物館營業時間與免費參觀日整理)
 10. paris_navigo_pass.jpg (交通攻略: Navigo Pass 週卡使用規則與範圍)
 11. paris_transit_tips.jpg (交通攻略: Navigo Easy、週末青年票、Citymapper)
+
+# 💡 本地與線上 GitHub Pages 自動部署已完美串接！
