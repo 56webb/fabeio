@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // ===== Google 試算表發佈網址 =====
+  const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKsRU4MxrVDOZOUosa5bUMDZG8w9kHqy_iPEKrGD6dB9Q_8SJcfPr7pT9hVLXJuUXbO6Z0o0TsX5Ns/pub?output=csv';
+
   // ===== 狀態管理與防錯處理 =====
   let initialNotes = JSON.parse(localStorage.getItem('franceTripNotes'));
   if (!Array.isArray(initialNotes)) initialNotes = [];
@@ -15,28 +18,28 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('franceTripTodos', JSON.stringify(state.todos));
   }
 
-  // ===== 行程資料 =====
-  const itineraryData = [
-    { date: '9/15', time: '23:30', location: '桃園', type: 'transit', desc: '準備出發，前往機場報到', detail: '記得攜帶護照、網卡、轉接頭。建議提前 3 小時抵達機場。' },
-    { date: '9/16', time: '07:55', location: '戴高樂', type: 'transit', desc: '抵達法國巴黎戴高樂機場', detail: '辦理入境手續、領取行李、購買交通票券或開通網卡，前往市區或迪士尼。' },
-    { date: '9/17', location: '迪士尼', type: 'disney', desc: '巴黎迪士尼樂園 (雙園)', detail: '建議下載 Disneyland Paris App 掌握排隊時間，預約餐廳。晚上別錯過煙火秀！' },
-    { date: '9/18', location: '迪士尼', type: 'disney', desc: '巴黎迪士尼樂園 (雙園)', detail: '繼續攻略未完成的設施或看遊行。' },
-    { date: '9/19', location: '巴黎', type: 'paris', desc: '巴黎市區觀光', detail: '初探巴黎，可安排羅浮宮、塞納河畔漫步或艾菲爾鐵塔。' },
-    { date: '9/20', location: '比利時', type: 'belgium', desc: '前往比利時', detail: '搭乘跨國火車 (大力士列車 Thalys / Eurostar) 前往布魯塞爾。' },
-    { date: '9/21', location: '比利時', type: 'belgium', desc: '布魯日 / 根特', detail: '探訪北方威尼斯布魯日，或是中世紀古城根特。' },
-    { date: '9/22', location: '比利時', type: 'belgium', desc: '比利時漫遊', detail: '品嚐比利時鬆餅、巧克力與修道院啤酒。' },
-    { date: '9/23', location: '比利時', type: 'belgium', desc: '比利時漫遊', detail: '準備返回巴黎或繼續探索小鎮。' },
-    { date: '9/24', location: '巴黎', type: 'paris', desc: '返回巴黎', detail: '回到巴黎，辦理入住，市區購物或享用美食。' },
+  // ===== 行程資料 (預設 Fallback 行程 - 與最新試算表對齊) =====
+  let itineraryData = [
+    { date: '9/15', time: '23:30', location: '桃園', type: 'transit', desc: '準備出發，飛往巴黎', detail: '記得攜帶護照、網卡、轉接頭。建議提前 3 小時抵達機場。' },
+    { date: '9/16', time: '07:55', location: '戴高樂', type: 'transit', desc: '抵達戴高樂，前往購物村', detail: '辦理入境手續、領取行李，購買交通票券或加值。第一晚入住 Zenitude Hôtel-Résidences Chessy，下午逛河谷購物村 (La Vallée Village)。' },
+    { date: '9/17', location: '迪士尼', type: 'disney', desc: '迪士尼雙園遊玩', detail: '入住 Zenitude Hôtel-Résidences Chessy (第 2 晚)。建議下載 Disneyland Paris App 掌握排隊時間，預約餐廳。晚上別錯過煙火與無人機燈光秀！💡可對照後半部「四、 巴黎迪士尼限定法國製紀念品」清單去精品商店尋寶！' },
+    { date: '9/18', location: '迪士尼', type: 'disney', desc: '迪士尼雙園 ➔ 巴黎市區', detail: '入住 Zenitude Hôtel-Résidences Chessy (第 3 晚)。繼續攻略未完成的設施或看遊行，可到專屬商店尋找法國製聯名小物。傍晚返回巴黎市區辦理入住。' },
+    { date: '9/19', location: '巴黎', type: 'paris', desc: '巴黎市區觀光 (通票Day1)', detail: '初探巴黎，博物館通票六天開通第一天！可安排羅浮宮、塞納河畔漫步或艾菲爾鐵塔。' },
+    { date: '9/20', location: '巴黎', type: 'paris', desc: '巴黎深度遊 (通票Day2)', detail: '使用博物館通票。可安排奧塞美術館、蒙馬特高地、聖心堂。' },
+    { date: '9/21', location: '巴黎', type: 'paris', desc: '巴黎深度遊 (通票Day3)', detail: '使用博物館通票。可安排凱旋門、香榭麗舍大道、精品購物。' },
+    { date: '9/22', location: '巴黎', type: 'paris', desc: '巴黎深度遊 (通票Day4)', detail: '使用博物館通票。可安排瑪黑區特色小店、龐畢度中心。' },
+    { date: '9/23', location: '巴黎', type: 'paris', desc: '巴黎 ➔ 諾曼地/凡爾賽一日遊', detail: '使用博物館通票。上：凡爾賽宮 莫內花園 盧昂 埃特爾塔 諾曼地。凡爾賽宮一日遊，感受皇家奢華。' },
+    { date: '9/24', location: '巴黎', type: 'paris', desc: '巴黎 ➔ 羅亞爾河城堡一日遊', detail: '使用博物館通票。下：楓丹白露 香波爾城堡 子爵。晚上住蒙帕納斯車站附近，以利明早搭車。' },
     { date: '9/25', time: '06:48', location: '聖米歇爾', type: 'michel', desc: '前往聖米歇爾山', detail: '🚄 <strong>SNCF 跨城火車 (Paris Montparnasse ➔ Rennes)</strong><br>• 班次：✅ <strong>已訂票 06:48</strong> (訂位代碼：<strong>4WCP2R</strong>，2 人共 68.00 €，乘車人：Chang)<br>• 車程：約 1.5 - 2 小時<br><br>🚌 <strong>Keolis 接駁公車 (Rennes ➔ 聖米歇爾山)</strong><br>• 去程：08:45 / 13:00<br>• 回程：11:35 / 17:00<br>• 車程：約 1.5 小時 (來回 25€，可線上或現場購票)<br>• <a href="https://keolis-armor.com/en/5ey-Timetables-of-the-lines.html" target="_blank" style="color:var(--c-accent); text-decoration:underline;">🔗 2026 公車時刻表查詢</a><br><br><strong>🌊 今日潮汐資訊 (9/25)</strong><br>🔸 滿潮 (Pleine mer)：07:08、19:26 (大潮係數 77/82)<br>🔹 乾潮 (Basse mer)：01:34、13:54' },
-    { date: '9/26', location: '聖米歇爾', type: 'michel', desc: 'Relais Saint-Michel', detail: '下山走大街，上山走城牆。參觀修道院，品嚐普拉嬤嬤烘蛋。<br><br><strong>🌊 今日潮汐資訊 (9/26)</strong><br>🔸 滿潮 (Pleine mer)：07:45、20:02 (大潮係數 87/92 - 注意漲退潮變化)<br>🔹 乾潮 (Basse mer)：02:15、14:35' },
-    { date: '9/27', location: '聖米歇爾', type: 'michel', desc: '聖米歇爾山周邊', detail: '漫步海灣，準備返回巴黎。<br><br><strong>🌊 今日潮汐資訊 (9/27)</strong><br>🔸 滿潮 (Pleine mer)：08:20、20:37 (大潮係數 95/97 - 超大潮，景觀壯麗)<br>🔹 乾潮 (Basse mer)：02:56、15:14' },
-    { date: '9/28', location: '巴黎', type: 'paris', desc: '巴黎深度遊', detail: '奧塞美術館、蒙馬特高地、聖心堂。' },
-    { date: '9/29', location: '巴黎', type: 'paris', desc: '巴黎深度遊', detail: '凱旋門、香榭麗舍大道、精品購物。' },
-    { date: '9/30', location: '巴黎', type: 'paris', desc: '巴黎深度遊', detail: '凡爾賽宮一日遊，感受皇家奢華。' },
+    { date: '9/26', location: '聖米歇爾', type: 'michel', desc: '早上聖米歇爾，晚上雷恩', detail: '入住雷恩飯店。參觀修道院，品嚐普拉嬤嬤烘蛋。<br>💡 <em>「下山走大街，上山走城牆」</em> 聰明路線避開擁擠人潮。<br><br><strong>🌊 今日潮汐資訊 (9/26)</strong><br>🔸 滿潮 (Pleine mer)：07:45、20:02 (大潮係數 87/92 - 注意漲退潮變化)<br>🔹 乾潮 (Basse mer)：02:15、14:35' },
+    { date: '9/27', location: '聖馬洛', type: 'michel', desc: '聖馬洛海盜城一日遊', detail: '可由雷恩前往海盜城聖馬洛一日遊。漫步古城牆，吹海風，品嚐蕎麥可麗餅。⚠️ 修道院門票記得先買好。<br><br><strong>🌊 今日潮汐資訊 (9/27)</strong><br>🔸 滿潮 (Pleine mer)：08:20、20:37 (大潮係數 95/97 - 超大潮，景觀壯麗)<br>🔹 乾潮 (Basse mer)：02:56、15:14' },
+    { date: '9/28', location: '巴黎', type: 'paris', desc: '巴黎深度遊與慢活', detail: '漫步巴黎街頭，享受浪漫氛圍。' },
+    { date: '9/29', location: '巴黎', type: 'paris', desc: '巴黎深度遊與購物', detail: '安排採購精品與伴手禮，送禮自用兩相宜。' },
+    { date: '9/30', location: '巴黎', type: 'paris', desc: '巴黎慢活自由行', detail: '保留彈性的空白天，漫步巴黎街角。' },
     { date: '10/1', location: '巴黎', type: 'paris', desc: '巴黎深度遊', detail: '拉丁區、萬神殿、盧森堡公園、花神咖啡館。' },
-    { date: '10/2', location: '巴黎', type: 'paris', desc: '巴黎深度遊', detail: '瑪黑區特色小店、龐畢度中心。' },
-    { date: '10/3', location: '巴黎', type: 'paris', desc: '巴黎深度遊', detail: '塞納河遊船晚餐，欣賞巴黎夜景。' },
-    { date: '10/4', location: '巴黎', type: 'paris', desc: '巴黎深度遊', detail: '自由活動，採買伴手禮 (藥妝、精品、超市)。' },
+    { date: '10/2', location: '巴黎', type: 'paris', desc: '巴黎深度遊', detail: '塞納河畔漫步、左岸咖啡、莎士比亞書店。' },
+    { date: '10/3', location: '巴黎', type: 'paris', desc: '巴黎深度遊', detail: '塞納河遊船晚餐，欣賞巴黎閃耀夜景。' },
+    { date: '10/4', location: '巴黎', type: 'paris', desc: '巴黎深度遊', detail: '自由活動，體驗 Picard 冷凍食品或逛當地市集。' },
     { date: '10/5', location: '巴黎', type: 'paris', desc: '巴黎最後巡禮', detail: '確認行李重量，整理退稅單據。最後的美食饗宴。' },
     { date: '10/6', time: '11:20', location: '戴高樂', type: 'transit', desc: '前往機場準備搭機', detail: '建議提前 4 小時抵達機場辦理退稅手續，排隊人潮通常很多。' },
     { date: '10/7', time: '06:40', location: '桃園', type: 'transit', desc: '平安抵達台灣', detail: '旅途結束，帶著滿滿的回憶回家！' }
@@ -160,15 +163,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // ===== 初始化功能 =====
   initNavbar();
   initCountdown();
-  renderCalendar();
-  renderMasterTodoList();
-  renderMasterTodoList();
   renderRecommendations();
   renderTips();
   renderBookings();
   renderRegistry();
   initNotes();
   initBackToTop();
+
+  // 非同步載入 Google 試算表行程並動態渲染行事曆與待辦總表
+  fetchAndRenderItinerary();
 
   // ===== 導覽列功能 =====
   function initNavbar() {
@@ -1023,5 +1026,152 @@ document.addEventListener('DOMContentLoaded', () => {
           '"': '&quot;'
         }[tag])
     );
+  }
+
+  // ===== Google 試算表動態串接與離線快照保護系統 =====
+
+  // 輕量級 CSV 解析器，支援引號與欄位內換行 (\n)
+  function parseCSV(text) {
+    const lines = [];
+    let row = [""];
+    let inQuotes = false;
+
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      const next = text[i+1];
+      if (c === '"') {
+        if (inQuotes && next === '"') {
+          row[row.length - 1] += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (c === ',' && !inQuotes) {
+        row.push('');
+      } else if ((c === '\r' || c === '\n') && !inQuotes) {
+        if (c === '\r' && next === '\n') {
+          i++;
+        }
+        lines.push(row);
+        row = [''];
+      } else {
+        row[row.length - 1] += c;
+      }
+    }
+    if (row.length > 1 || row[0] !== '') {
+      lines.push(row);
+    }
+    return lines;
+  }
+
+  // 非同步抓取、解析 Google 試算表，支援斷網離線保護
+  async function fetchAndRenderItinerary() {
+    const statusBadge = document.getElementById('syncStatusBadge');
+    try {
+      // 加上時間戳記防快取參數，確保每次重整都向 Google 伺服器要求最新版
+      const response = await fetch(GOOGLE_SHEET_CSV_URL + '&t=' + Date.now());
+      if (!response.ok) throw new Error('雲端回應異常');
+      const csvText = await response.text();
+      
+      // 解析 CSV
+      const parsedRows = parseCSV(csvText);
+      
+      // 過濾並映射有效資料行 (日期符合 M/D 格式)
+      const dataRows = parsedRows.filter(row => {
+        if (row.length < 4) return false;
+        return /^\d{1,2}\/\d{1,2}$/.test(row[0].trim());
+      });
+
+      if (dataRows.length > 0) {
+        const mappedData = dataRows.map(row => {
+          const date = row[0].trim();
+          const weekday = row[1] ? row[1].trim() : '';
+          const time = row[2] ? row[2].trim() : '';
+          const location = row[3] ? row[3].trim() : '';
+          const transit = row[4] ? row[4].trim() : '';
+          const hotel = row[5] ? row[5].trim() : '';
+          const note = row[6] ? row[6].trim() : '';
+          
+          // 行程種類判定
+          let type = 'paris';
+          if (location.includes('桃園') || location.includes('戴高樂') || location.includes('機場') || transit.includes('機') || transit.includes('航')) {
+            type = 'transit';
+          } else if (location.includes('迪士尼') || hotel.includes('Zenitude') || note.includes('迪士尼')) {
+            type = 'disney';
+          } else if (location.includes('聖米歇爾') || hotel.includes('Relais') || location.includes('雷恩') || location.includes('聖馬洛')) {
+            type = 'michel';
+          } else if (location.includes('比利時') || location.includes('布魯日') || location.includes('根特')) {
+            type = 'belgium';
+          }
+
+          // 動態整合詳細描述 (包含交通、住宿與詳細備註)
+          let detailParts = [];
+          if (transit) detailParts.push(`<strong>🚇 交通與備忘：</strong><br>${transit.replace(/\n/g, '<br>')}`);
+          if (hotel) detailParts.push(`<strong>🏨 住宿預訂：</strong><br>${hotel.replace(/\n/g, '<br>')}`);
+          if (note) detailParts.push(`<strong>💡 行程與備忘：</strong><br>${note.replace(/\n/g, '<br>')}`);
+
+          let detail = detailParts.join('<br><br>');
+
+          // 特殊景點注入精美的手工 html 攻略 (維持原 index 亮點)
+          if (date === '9/25') {
+            detail = `🚄 <strong>SNCF 跨城火車 (Paris Montparnasse ➔ Rennes)</strong><br>• 班次：✅ <strong>已訂票 06:48</strong> (訂位代碼：<strong>4WCP2R</strong>，2 人共 68.00 €)<br>• 車程：約 1.5 - 2 小時<br><br><strong>🌊 今日潮汐資訊 (9/25)</strong><br>🔸 滿潮 (Pleine mer)：07:08、19:26 (大潮係數 77/82)<br>🔹 乾潮 (Basse mer)：01:34、13:54<br><br>` + detail;
+          } else if (date === '9/26') {
+            detail = `<strong>⛰️ 聖米歇爾山探索攻略</strong><br>• 參觀修道院，品嚐普拉嬤嬤烘蛋。<br>• 💡 <em>「下山走大街，上山走城牆」</em> 聰明路線避開擁擠人潮。<br><br><strong>🌊 今日潮汐資訊 (9/26)</strong><br>🔸 滿潮 (Pleine mer)：07:45、20:02 (大潮係數 87/92 - 注意漲退潮變化)<br>🔹 乾潮 (Basse mer)：02:15、14:35<br><br>` + detail;
+          } else if (date === '9/27') {
+            detail = `<strong>🏰 聖馬洛 (Saint-Malo) 海盜城一日遊</strong><br>• 漫步古城牆，吹海風，品嚐蕎麥可麗餅。⚠️ 修道院門票記得先買好。<br><br><strong>🌊 今日潮汐資訊 (9/27)</strong><br>🔸 滿潮 (Pleine mer)：08:20、20:37 (大潮係數 95/97 - 超大潮，景觀壯麗)<br>🔹 乾潮 (Basse mer)：02:56、15:14<br><br>` + detail;
+          }
+
+          // 取出第一行做為卡片顯示的精簡 desc，過濾掉 html 標籤
+          const rawDesc = (transit || note || hotel || `${location}探索`).split('\n')[0].replace(/<[^>]*>/g, '');
+          const desc = rawDesc.length > 18 ? rawDesc.substring(0, 18) + '...' : rawDesc;
+
+          return {
+            date,
+            time,
+            location,
+            type,
+            desc: desc || '探索美麗景致',
+            detail: detail || '今日暫無詳細計畫備忘。'
+          };
+        });
+
+        itineraryData = mappedData;
+        
+        // 儲存到本地快照，防斷網
+        localStorage.setItem('franceTripItinerarySnapshot', JSON.stringify(mappedData));
+        localStorage.setItem('franceTripItinerarySnapshotTime', new Date().toLocaleString());
+      }
+
+      // 更新同步狀態徽章為成功
+      if (statusBadge) {
+        statusBadge.className = 'sync-status-badge synced';
+        statusBadge.innerHTML = '🟢 試算表已同步';
+        statusBadge.title = `最後同步時間：${new Date().toLocaleTimeString()}`;
+      }
+    } catch (error) {
+      console.warn('無法從 Google 試算表同步資料，載入離線緩存：', error);
+      
+      const snapshot = localStorage.getItem('franceTripItinerarySnapshot');
+      const snapshotTime = localStorage.getItem('franceTripItinerarySnapshotTime');
+      
+      if (snapshot) {
+        itineraryData = JSON.parse(snapshot);
+        if (statusBadge) {
+          statusBadge.className = 'sync-status-badge offline';
+          statusBadge.innerHTML = '🟡 離線快照模式';
+          statusBadge.title = `載入離線緩存，快照時間：${snapshotTime} (錯誤原因: ${error.message})`;
+        }
+      } else {
+        if (statusBadge) {
+          statusBadge.className = 'sync-status-badge fallback';
+          statusBadge.innerHTML = '🔴 斷網預設行程';
+          statusBadge.title = `無本地緩存，使用網頁出廠預設行程 (錯誤原因: ${error.message})`;
+        }
+      }
+    }
+
+    // 重新渲染行事曆與待辦事項
+    renderCalendar();
+    renderMasterTodoList();
   }
 });

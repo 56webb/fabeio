@@ -15,6 +15,15 @@
 </head>
 
 <body>
+  <!-- ===== 第一次進入的免責聲明遮罩 ===== -->
+  <div id="disclaimerOverlay" class="disclaimer-full-overlay">
+    <div class="disclaimer-card">
+      <div class="disclaimer-icon">⚖️</div>
+      <h2>重要聲明</h2>
+      <p>本網站由 <b>AI 輔助生成</b>，資訊僅供參考。實際行程、時間與地點請務必以<b>導遊說明</b>為準。請根據需要謹慎使用本網站資訊。</p>
+      <button id="disclaimerAcceptBtn" class="btn btn-primary btn-large">我已了解，進入網站</button>
+    </div>
+  </div>
 
   <!-- ===== 頂部導覽列 ===== -->
   <nav class="navbar" id="navbar">
@@ -24,11 +33,10 @@
     </div>
     <ul class="nav-links" id="navLinks">
       <li><a href="#overview" class="nav-link active" data-section="overview">行程總覽</a></li>
-      <li><a href="#dashboard" class="nav-link" data-section="dashboard">儀表板</a></li>
+
       <li><a href="#weather" class="nav-link" data-section="weather">天氣</a></li>
       <li><a href="#timeline" class="nav-link" data-section="timeline">每日行程</a></li>
       <li><a href="#checklist" class="nav-link" data-section="checklist">行前檢查</a></li>
-      <li><a href="#todo-master" class="nav-link" data-section="todo-master">待辦</a></li>
       <li><a href="#bookings" class="nav-link" data-section="bookings">訂位</a></li>
       <li><a href="#recommendations" class="nav-link" data-section="recommendations">美食景點</a></li>
       <li><a href="#tips" class="nav-link" data-section="tips">旅遊小撇步</a></li>
@@ -63,7 +71,7 @@
         </div>
         <div class="stat-divider"></div>
         <div class="stat-item">
-          <span class="stat-number">多</span>
+          <span class="stat-number">4</span>
           <span class="stat-label">主要城市</span>
         </div>
         <div class="stat-divider"></div>
@@ -78,6 +86,7 @@
         <span class="loc-tag">❄️ 黑部立山</span>
         <span class="loc-tag">🏘️ 合掌村</span>
       </div>
+      <p class="hero-disclaimer">⚠️ 本網站由 AI 輔助生成，資訊僅供參考。實際行程請以導遊說明為準，請謹慎使用。</p>
     </div>
     <div class="hero-scroll-hint">
       <span>向下滾動</span>
@@ -88,30 +97,12 @@
   <!-- ===== 主要內容 ===== -->
   <main class="main-content">
 
-    <!-- ===== 旅行儀表板 ===== -->
-    <section class="section dashboard-section" id="dashboard">
-      <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">旅行儀表板</h2>
-          <p class="section-subtitle">出發前最常查的資訊放在第一眼</p>
-        </div>
-        <div class="dashboard-grid" id="dashboardGrid">
-          <!-- 由 JS 動態產生 -->
-        </div>
-        <div class="alert-strip">
-          <div class="alert-icon">⚠</div>
-          <div>
-            <strong>山區提醒：</strong>
-            5/8 山中湖飯店附近 1 公里內沒有超商或超市，當天回飯店前請先買好飲水、點心與需要的藥品。
-          </div>
-        </div>
-      </div>
-    </section>
+
 
     <!-- ===== 天氣預測 ===== -->
     <section class="section section-dark" id="weather">
       <div class="container">
-        <details class="weather-panel" open>
+        <details class="weather-panel">
           <summary class="weather-panel-summary">
             <div>
               <h2 class="section-title">天氣預測</h2>
@@ -161,18 +152,6 @@
       </div>
     </section>
 
-    <!-- ===== 待辦事項總表 ===== -->
-    <section class="section section-dark" id="todo-master">
-      <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">待辦事項總表</h2>
-          <p class="section-subtitle">統整整趟旅程的所有任務</p>
-        </div>
-        <div class="todo-master-container" id="todoMasterContainer">
-          <!-- 由 JS 動態產生 -->
-        </div>
-      </div>
-    </section>
 
     <!-- ===== 訂位總覽 ===== -->
     <section class="section" id="bookings">
@@ -327,7 +306,6 @@
   <nav class="mobile-quick-nav" aria-label="手機快速導覽">
     <a href="#timeline"><span>📅</span><small>行程</small></a>
     <a href="#weather"><span>🌦️</span><small>天氣</small></a>
-    <a href="#todo-master"><span>✅</span><small>待辦</small></a>
     <a href="#bookings"><span>🎫</span><small>訂位</small></a>
     <a href="#notes"><span>📝</span><small>備忘</small></a>
   </nav>
